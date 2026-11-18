@@ -47,7 +47,7 @@ def summarize(dates, flows, sites):
             minimum = np.min(gauge_flows)
             average = np.mean(gauge_flows)
             maximum_row = np.argmax(gauge_flows)
-            date_of_maximum = str(dates[maximum_row])
+            date_of_maximum = str(dates[maximum_row])[:16].replace('T', ' ')
             print(f"{site:<12}{maximum:10.1f}   {date_of_maximum:<19}{minimum:10.1f}   {average:10.1f}")
             file.write(f"{site},{maximum:.1f},{date_of_maximum},{minimum:.1f},{average:.1f}\n")
 
@@ -57,3 +57,9 @@ sites = ['10163000', '10155200', '10155500', '10154200', '10155000']
 dates, flows = load_streamflow('June-2021-Provo-River-Streamflow-Rates.csv')
 plot_streamflow(dates, flows, sites)
 summarize(dates, flows, sites)
+
+threshold = float(input('Enter a flow threshold in cfs: '))
+print(f"\nHours in June 2021 above {threshold:.1f} cfs")
+for column, site in enumerate(sites):
+    hours_above = np.sum(flows[:, column] > threshold) * 0.25
+    print(f"{site:<12}{hours_above:10.2f}")
